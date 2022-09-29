@@ -1,78 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test_app/api/models/task.dart';
+import 'package:flutter_test_app/screens/day/widgets/day_task_list.dart';
 import 'day_cubit.dart';
+import 'widgets/day_task_form/day_task_form.dart';
 
-class DayScreen extends StatelessWidget  {
-  final TextEditingController _timeController = TextEditingController();
-  final DateTime date;
-
-  DayScreen({
+class DayScreen extends StatefulWidget {
+  const DayScreen({
     Key? key,
     required this.date,
   }) : super(key: key);
 
+  final DateTime date;
+
   @override
-    Widget build(BuildContext context) {
-    return BlocBuilder<DayCubit, List>(
-      builder: (BuildContext context, List items) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(date.toString()),
-          ),
-          body: Column(
+  State<DayScreen> createState() => _DayScreenState();
+}
+
+class _DayScreenState extends State<DayScreen> {
+  @override
+  void initState() {
+    super.initState();
+    //context.read<DayCubit>().addTask(Task(time: 'vdfv', description: 'dvdfvdfv'));
+    context.read<DayCubit>().getTasks();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.date.toString()),
+      ),
+      body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(
-                child: ListView.builder(
-                  itemCount: items.length,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  itemBuilder: (BuildContext context, int index) {
-                    return Dismissible(
-                      background: Container(
-                        color: Colors.red,
-                      ),
-                      key: ValueKey<int>(items[index]),
-                      onDismissed: (DismissDirection direction) {
-                        context.read<DayCubit>().removeTask(index);
-                      },
-                      child: ListTile(
-                        title: Text(
-                          'Item ${items[index]}',
-                        ),
-                      ),
+                child: BlocBuilder<DayCubit, DayState>(
+                  builder: (BuildContext context, DayState state) {
+                    return DayTaskList(
+                      tasks: state.tasks,
+                      onTaskDismiss: onTaskDismiss
                     );
-                  },
+                  }
                 ),
               ),
               Expanded(
-                child: Form(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      children: [
-                        TextFormField(
-                         // onTap: () => _selectTime(context),
-                          controller: _timeController,
-                        ),
-                        TextFormField(),
-                        ElevatedButton(
-                          onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Processing Data')),
-                              );
-                          },
-                          child: const Text('Submit'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                child: DayTaskForm(
+                  onSubmit: addTask
+                )
               )
             ],
           )
-        );
-      }
     );
   }
 
+  void onTaskDismiss(String id) {
+    context.read<DayCubit>().deleteTask(id);
+  }
+
+  void addTask(String time, String description) {
+    //widget.date;
+    final Task task = Task(
+      time: time,
+      description: description
+    );
+    context.read<DayCubit>().addTask(task)
+     .then((value) => {
+      
+     });
+  }
+
+  // @override
+  // void dispose() {
+  //   _cubit.close();
+  //   super.dispose();
+  // }
 }

@@ -1,30 +1,44 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter_test_app/api/models/task.dart';
+import 'package:flutter_test_app/repositories/tasks_repository.dart';
 
-class DayCubit extends Cubit<List> {
-  static final List<int> items = List<int>.generate(10, (int index) => index);
+class DayCubit extends Cubit<DayState> {
+  DayCubit({
+    required TasksRepository tasksRepository,
+  }) : _tasksRepository = tasksRepository, super(const DayState());
 
-  // static final data = {
-  //   date,
-  //   items
-  // };
+  final TasksRepository _tasksRepository;
 
-  DayCubit() : super(items);
-
-  void removeTask(id) {
-    state.removeAt(id);
-    emit(state);
+  void getTasks() {
+    final tasks = _tasksRepository.getTasks();
+    emit(DayState(tasks: tasks));
   }
 
-  void addTask(id) {
-     
+  Future<void> deleteTask(String id) async {
+    await _tasksRepository.deleteTask(id);
+    final tasks = [...state.tasks];
+    tasks.removeWhere((task) => task.id == id);
+    emit(DayState(tasks: tasks));
+  }
+
+  Future<void> addTask(Task task) async {
+    await _tasksRepository.addTask(task);
+    final tasks = [...state.tasks];
+    tasks.add(task);
+    emit(DayState(tasks: tasks));
   }
 }
 
-// class DayStateModel {
-//     Todo({
-//     String? id,
-//     required this.title,
-//     this.description = '',
-//     this.isCompleted = false,
-//   })
-// }
+enum Status { initial, loading, loaded, error }
+
+class DayState extends Equatable {
+  const DayState({
+    this.tasks = const <Task>[],
+  });
+
+  final List<Task> tasks;
+
+  @override
+  List<Object?> get props => [tasks];
+}
