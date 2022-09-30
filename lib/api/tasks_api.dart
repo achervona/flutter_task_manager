@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/task.dart';
+import "package:collection/collection.dart";
 
 class TasksApi {
   TasksApi({
@@ -35,8 +36,21 @@ class TasksApi {
 
   //Stream<List<Task>> getTasks(String time) => _tasksStreamController.asBroadcastStream().where((event) => false);
 
-  List<Task> getTasks() {
-    return [..._tasksStreamController.value];
+  Map getTaskCountsForMonth(int year, int month) {
+    final monthTasks = [..._tasksStreamController.value].where((task) => task.dateTime.year == year && task.dateTime.month == month).toList();
+
+    final Map releaseDateMap = groupBy(monthTasks, (Task task) => task.dateTime.day);
+    
+
+    releaseDateMap.forEach((key, value) {releaseDateMap[key] = releaseDateMap[key].length;});
+
+
+    print(releaseDateMap);
+    return releaseDateMap;
+  }
+
+  List<Task> getTasks(DateTime date) {
+    return [..._tasksStreamController.value].where((task) => _isDateEqual(task.dateTime, date)).sortedBy((Task task) => task.dateTime).toList();
   }
 
   Future<void> addTask(Task task) {
@@ -54,5 +68,9 @@ class TasksApi {
       _tasksStreamController.add(tasks);
       return _setValue(kTasksCollectionKey, json.encode(tasks));
     }
+  }
+
+  bool _isDateEqual(DateTime firstDate, DateTime secondDate) {
+    return firstDate.year == secondDate.year && firstDate.month == secondDate.month && firstDate.day == secondDate.day;
   }
 }

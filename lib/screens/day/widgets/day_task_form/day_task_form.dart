@@ -16,21 +16,21 @@ class DayTaskForm extends StatefulWidget  {
 
 class _DayTaskFormState extends State<DayTaskForm> {
   final DayTaskFormCubit _cubit = DayTaskFormCubit();
-  //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _descriptionController = TextEditingController();
   late final List<String> _timeDropdownOptions;
 
   @override
   void initState() {
     super.initState();
-    _timeDropdownOptions = getTimeOptions();
+    _timeDropdownOptions = _getTimeOptions();
     _cubit.setSelectedTime(_timeDropdownOptions.first);
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      //key: _formKey,
+      key: _formKey,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: BlocBuilder<DayTaskFormCubit, DayTaskFormState>(
@@ -55,13 +55,15 @@ class _DayTaskFormState extends State<DayTaskForm> {
                 ),
                 TextFormField(
                   controller: _descriptionController,
+                  validator: (value) => value == null || value.isEmpty ? 'Required field' : null,
                 ),
-                ElevatedButton(
-                  onPressed: widget.onSubmit != null 
-                    ? () => widget.onSubmit!(state.selectedTime!, _descriptionController.value.text) 
-                    : null,
-                  child: const Text('Add task'),
-                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: ElevatedButton(
+                    onPressed: () => _onSubmit(state.selectedTime!, _descriptionController.value.text),
+                      child: const Text('Add task'),
+                    )
+                  )
               ],
             );
           }
@@ -70,7 +72,16 @@ class _DayTaskFormState extends State<DayTaskForm> {
     );
   }
 
-  List<String> getTimeOptions() {
+  void _onSubmit(String time, String description) {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    if (widget.onSubmit != null) {
+      widget.onSubmit!(time, description);
+    }
+  }
+
+  List<String> _getTimeOptions() {
     final List<String> options = [];
 
     for (int i = 0; i <= 23; i++) {

@@ -10,22 +10,22 @@ part 'task.g.dart';
 class Task extends Equatable {
   Task({
     String? id,
-    required this.time,
+    required this.dateTime,
     this.description = '',
   }) : id = id ?? const Uuid().v4();
 
   final String id;
-  final String time;
+  final DateTime dateTime;
   final String description;
 
   Task copyWith({
     String? id,
-    String? time,
+    DateTime? dateTime,
     String? description,
   }) {
     return Task(
       id: id ?? this.id,
-      time: time ?? this.time,
+      dateTime: dateTime ?? this.dateTime,
       description: description ?? this.description,
     );
   }
@@ -35,5 +35,5 @@ class Task extends Equatable {
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 
   @override
-  List<Object> get props => [id, time, description];
+  List<Object> get props => [id, dateTime, description];
 }

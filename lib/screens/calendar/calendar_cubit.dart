@@ -1,13 +1,18 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_test_app/repositories/tasks_repository.dart';
 
 class CalendarCubit extends Cubit<CalendarState> {
   static final DateTime _initialDate = DateTime.now();
 
-  CalendarCubit() : super(CalendarState(
+  CalendarCubit({
+    required TasksRepository tasksRepository,
+  }) : _tasksRepository = tasksRepository, super(CalendarState(
     year: _initialDate.year,
     month: _initialDate.month
   ));
+
+  final TasksRepository _tasksRepository;
 
   void nextMonth() {
     emit( 
@@ -21,6 +26,8 @@ class CalendarCubit extends Cubit<CalendarState> {
           month: 1
         )
     );
+
+    //getTaskCountsForMonth(2022, 9);
   }
 
   void prevMonth() {
@@ -36,6 +43,8 @@ class CalendarCubit extends Cubit<CalendarState> {
         )
     );
   }
+
+  Map getTaskCountsForMonth(int year, int month) => _tasksRepository.getTaskCountsForMonth(year, month);
 }
 
 class CalendarState extends Equatable {

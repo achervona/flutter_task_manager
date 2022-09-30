@@ -9,7 +9,9 @@ class TasksRepository {
   final TasksApi _tasksApi;
 
   //Stream<List<Task>> getTasks() => _tasksApi.getTasks('dfgdf');
-  List<Task> getTasks() => _tasksApi.getTasks();
+  Map getTaskCountsForMonth(int year, int month) => _tasksApi.getTaskCountsForMonth(year, month);
+
+  List<Task> getTasks(DateTime date) => _tasksApi.getTasks(date);
 
   Future<void> addTask(Task task) => _tasksApi.addTask(task);
 

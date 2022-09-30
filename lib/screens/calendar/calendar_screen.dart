@@ -4,13 +4,12 @@ import 'package:flutter_test_app/repositories/tasks_repository.dart';
 import 'package:flutter_test_app/screens/day/day_cubit.dart';
 import 'package:flutter_test_app/screens/day/day_screen.dart';
 import 'calendar_cubit.dart';
-import 'widgets/calendar_cell_widget.dart';
+import 'widgets/calendar_cell.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({
     Key? key,
   }) : super(key: key);
-
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -18,12 +17,16 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   final List<String> days = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"];
-  final CalendarCubit _cubit = CalendarCubit();
+
+  @override
+  void initState() {
+    super.initState();
+    //context.read<CalendarCubit>().getTaskCountsForMonth(2022, 9);
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CalendarCubit, CalendarState>(
-      bloc: _cubit,
       builder: (BuildContext context, CalendarState state) {
         return Scaffold(
           appBar: AppBar(
@@ -33,7 +36,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 Icons.arrow_left,
                 size: 24
               ),
-              onPressed: () => _cubit.prevMonth(),
+              onPressed: () => context.read<CalendarCubit>().prevMonth(),
             ),
             actions: [
               IconButton(
@@ -41,7 +44,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Icons.arrow_right,
                   size: 24
                 ),
-                onPressed: () => _cubit.nextMonth(),
+                onPressed: () => context.read<CalendarCubit>().nextMonth(),
               )
             ],
           ),
@@ -122,7 +125,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   void dispose() {
-    _cubit.close();
     super.dispose();
   }
 }

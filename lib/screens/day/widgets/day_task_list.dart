@@ -13,6 +13,11 @@ class DayTaskList extends StatelessWidget  {
 
   @override
   Widget build(BuildContext context) {
+    if (tasks.isEmpty) {
+      return const Center(
+        child: Text('There are no tasks')
+      );
+    }
     return ListView.builder(
       itemCount: tasks.length,
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -24,11 +29,17 @@ class DayTaskList extends StatelessWidget  {
           key: ValueKey<String>(tasks[index].id),
           onDismissed: onTaskDismiss != null ? (_) => onTaskDismiss!(tasks[index].id) : null,
           child: ListTile(
-            title: Text(tasks[index].time),
+            title: Text(getTimeFromDate(tasks[index].dateTime)),
             subtitle: Text(tasks[index].description),
           ),
         );
       },
     );
+  }
+
+  String getTimeFromDate(DateTime date) {
+    final String hours = date.hour.toString().padLeft(2, '0');
+    final String minutes = date.minute.toString().padLeft(2, '0');
+    return hours + ':' + minutes;
   }
 }
