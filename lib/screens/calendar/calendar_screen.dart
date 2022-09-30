@@ -4,6 +4,7 @@ import 'package:flutter_test_app/repositories/tasks_repository.dart';
 import 'package:flutter_test_app/screens/day/day_cubit.dart';
 import 'package:flutter_test_app/screens/day/day_screen.dart';
 import 'calendar_cubit.dart';
+import 'calendar_state.dart';
 import 'widgets/calendar_cell.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -30,7 +31,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       builder: (BuildContext context, CalendarState state) {
         return Scaffold(
           appBar: AppBar(
-            title: Text(state.year.toString() + ' ' + state.month.toString()),
+            centerTitle: true,
+            title: Text(_getMonthName(state.month) + ' ' + state.year.toString()),
             leading: IconButton(
               icon: const Icon(
                 Icons.arrow_left,
@@ -50,18 +52,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           body: GridView.count(
             primary: false,
-            padding: const EdgeInsets.all(20),
-            crossAxisSpacing: 4,
-            mainAxisSpacing: 4,
+            padding: const EdgeInsets.all(10.0),
+            crossAxisSpacing: 4.0,
+            mainAxisSpacing: 4.0,
             crossAxisCount: 7,
             children: [
               ...days.map((day) { 
                   return CalendarCell(
                     text: day,
-                    color: Colors.blueAccent,
+                    textColor: Colors.purple.shade800,
+                    color: Colors.white,
+                    //border: true,
                   );
               }).toList(),
-              ...getDayCells(state.year, state.month, context)
+              ..._getDayCells(state.year, state.month, context)
             ]
           )
          );
@@ -69,7 +73,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  List getDayCells (int year, int month, context) {
+  List _getDayCells (int year, int month, context) {
     final int firstWeekdayOfMonth = DateTime(year, month, 1).weekday;
     final DateTime lastDateOfMonth = DateTime(year, month + 1, 0);
     final DateTime nowDate = DateTime.now();
@@ -82,7 +86,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         cells.add(
           CalendarCell(
             text: (lastDayOfPrevMonth - i + 1).toString(),
-            color: Colors.grey
+            color: Colors.purple.shade200,
           ));
       }
     }
@@ -91,8 +95,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       cells.add(
         CalendarCell(
           text: i.toString(),
-          color: i == nowDate.day && month == nowDate.month && year == nowDate.year ? Colors.greenAccent : Colors.red,
-          onTap: () => navigateToDayScreen(DateTime(year, month, i), context)
+          color: i == nowDate.day && month == nowDate.month && year == nowDate.year ? Colors.redAccent.shade400 : Colors.purple.shade800,
+          onTap: () => _navigateToDayScreen(DateTime(year, month, i), context)
         ));
     }
 
@@ -103,7 +107,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         cells.add(
           CalendarCell(
             text: i.toString(),
-            color: Colors.grey,
+            color: Colors.purple.shade200,
           ));
       }
     }
@@ -111,7 +115,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return cells;
   }
 
-  void navigateToDayScreen(DateTime date, BuildContext context) {
+  void _navigateToDayScreen(DateTime date, BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) {
@@ -123,8 +127,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  String _getMonthName(int month) {
+    final List<String> months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return months[month - 1];
   }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  // }
 }

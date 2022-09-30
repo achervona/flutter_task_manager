@@ -14,6 +14,7 @@ class TasksApi {
 
   final SharedPreferences _plugin;
   final _tasksStreamController = BehaviorSubject<List<Task>>.seeded(const []);
+  final controller = BehaviorSubject<List<Task>>.seeded(const []);
   static const kTasksCollectionKey = '__tasks_collection_key__';
 
   String? _getValue(String key) => _plugin.getString(key);
@@ -34,23 +35,13 @@ class TasksApi {
     }
   }
 
-  //Stream<List<Task>> getTasks(String time) => _tasksStreamController.asBroadcastStream().where((event) => false);
-
-  Map getTaskCountsForMonth(int year, int month) {
-    final monthTasks = [..._tasksStreamController.value].where((task) => task.dateTime.year == year && task.dateTime.month == month).toList();
-
-    final Map releaseDateMap = groupBy(monthTasks, (Task task) => task.dateTime.day);
-    
-
-    releaseDateMap.forEach((key, value) {releaseDateMap[key] = releaseDateMap[key].length;});
-
-
-    print(releaseDateMap);
-    return releaseDateMap;
-  }
-
-  List<Task> getTasks(DateTime date) {
-    return [..._tasksStreamController.value].where((task) => _isDateEqual(task.dateTime, date)).sortedBy((Task task) => task.dateTime).toList();
+  List<Task> getTasks(DateTime startDate, DateTime? endDate) {
+    return [..._tasksStreamController.value]
+      .where((Task task) => 
+        (task.dateTime.isAfter(startDate) || task.dateTime.isAtSameMomentAs(startDate)) 
+        && (endDate != null ? task.dateTime.isBefore(endDate) : task.dateTime.isBefore(startDate.add(const Duration(days: 1)))))
+      .sortedBy((Task task) => task.dateTime)
+      .toList();
   }
 
   Future<void> addTask(Task task) {
@@ -70,7 +61,7 @@ class TasksApi {
     }
   }
 
-  bool _isDateEqual(DateTime firstDate, DateTime secondDate) {
-    return firstDate.year == secondDate.year && firstDate.month == secondDate.month && firstDate.day == secondDate.day;
-  }
+  // bool _isDateEqual(DateTime firstDate, DateTime secondDate) {
+  //   return firstDate.year == secondDate.year && firstDate.month == secondDate.month && firstDate.day == secondDate.day;
+  // }
 }

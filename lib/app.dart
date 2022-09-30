@@ -17,18 +17,26 @@ class TaskManagerApp extends StatelessWidget  {
     return RepositoryProvider.value(
       value: tasksRepository,
       child: MaterialApp(
-          title: 'Task Manager',
-          // theme: ThemeData(
-          //   primaryColor: const Color.fromRGBO(109, 234, 255, 1),
-          //   colorScheme: const ColorScheme.light(
-          //     secondary: Color.fromRGBO(72, 74, 126, 1),
-          //   ),
-          // ),
-          home: BlocProvider(
-            create: (BuildContext context) => CalendarCubit(tasksRepository: tasksRepository),
-            child: CalendarScreen()
+        title: 'Task Manager',
+        theme: ThemeData(
+          primaryColor: Colors.purple.shade800,
+          colorScheme: ColorScheme.light(
+            primary: Colors.purple.shade800,
+            secondary: Colors.purple.shade400
+          ),
+          scaffoldBackgroundColor: Colors.white,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ButtonStyle(
+              textStyle: MaterialStateProperty.resolveWith<TextStyle?>((_) => TextStyle(fontSize: 16.0)),
+              padding: MaterialStateProperty.resolveWith<EdgeInsetsGeometry?>((_) => EdgeInsets.all(16.0))
+            ),
           )
+        ),
+        home: BlocProvider(
+          create: (BuildContext context) => CalendarCubit(tasksRepository: tasksRepository),
+          child: const CalendarScreen()
         )
+      )
     );
   }
 }

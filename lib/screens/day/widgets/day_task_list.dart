@@ -24,7 +24,7 @@ class DayTaskList extends StatelessWidget  {
       itemBuilder: (BuildContext context, int index) {
         return Dismissible(
           background: Container(
-            color: Colors.red,
+            color: Colors.redAccent.shade400,
           ),
           key: ValueKey<String>(tasks[index].id),
           onDismissed: onTaskDismiss != null ? (_) => onTaskDismiss!(tasks[index].id) : null,

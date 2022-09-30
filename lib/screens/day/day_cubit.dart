@@ -10,15 +10,11 @@ class DayCubit extends Cubit<DayState> {
 
   final TasksRepository _tasksRepository;
 
-  void getTasks(DateTime date) {
-    emit(
-      const DayState(
-        status: Status.loading
-      )
-    );
+  void getTasks(DateTime startDate, DateTime? endDate) {
+    emit(const DayState(status: Status.loading));
 
     try {
-      final tasks = _tasksRepository.getTasks(date);
+      final List<Task> tasks = _tasksRepository.getTasks(startDate, endDate);
       emit(
         DayState(
           tasks: tasks,
@@ -35,7 +31,7 @@ class DayCubit extends Cubit<DayState> {
   }
 
   Future<void> deleteTask(String id) async {
-    final tasks = [...state.tasks];
+    final List<Task> tasks = [...state.tasks];
 
     try {
       await _tasksRepository.deleteTask(id);
@@ -57,9 +53,25 @@ class DayCubit extends Cubit<DayState> {
   }
 
   Future<void> addTask(Task task) async {
-    await _tasksRepository.addTask(task);
-    final tasks = [...state.tasks, task];
-    tasks.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    emit(DayState(tasks: tasks));
+    final List<Task> tasks = [...state.tasks];
+
+    try {
+      await _tasksRepository.addTask(task);
+      tasks.add(task);
+      tasks.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      emit(
+        DayState(
+          tasks: tasks,
+          status: Status.success
+        )
+      );
+    } catch (error) {
+      emit(
+        DayState(
+          tasks: tasks,
+          status: Status.error
+        )
+      );
+    }
   }
 }
