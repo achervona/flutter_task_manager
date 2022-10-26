@@ -4,7 +4,7 @@ class CalendarCell extends StatelessWidget  {
   final String text;
   final Color? color;
   final Color? textColor;
-  final bool border;
+  final int taskNumber;
   final void Function()? onTap;
 
   const CalendarCell({
@@ -12,31 +12,54 @@ class CalendarCell extends StatelessWidget  {
     required this.text,
     this.color,
     this.textColor,
-    this.border = false,
+    this.taskNumber = 0,
     this.onTap
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      splashColor: Colors.purple.shade200,
       child: Container(
           padding: const EdgeInsets.all(4.0),
-          //color: color ?? Colors.purple.shade800,
           decoration: BoxDecoration(
             color: color ?? Colors.purple.shade800,
-            border: border ? Border.all(color: Colors.purple.shade800, width: 2.0) : null,
             borderRadius: const BorderRadius.all(Radius.circular(4.0))
           ),
-          child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                color: textColor ?? Colors.white,
-                fontSize: 16,
+          child: Stack(
+            children: [
+              Center(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: textColor ?? Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
               ),
-            ),
+              if (taskNumber != 0)
+                Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 18,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        taskNumber.toString(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple.shade800,
+                        ),
+                      ),
+                    )
+                  ),
+            ],
           )
         )
       );

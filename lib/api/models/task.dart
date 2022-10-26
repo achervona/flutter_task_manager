@@ -18,18 +18,6 @@ class Task extends Equatable {
   final DateTime dateTime;
   final String description;
 
-  // Task copyWith({
-  //   String? id,
-  //   DateTime? dateTime,
-  //   String? description,
-  // }) {
-  //   return Task(
-  //     id: id ?? this.id,
-  //     dateTime: dateTime ?? this.dateTime,
-  //     description: description ?? this.description,
-  //   );
-  // }
-
   static Task fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
   Map<String, dynamic> toJson() => _$TaskToJson(this);

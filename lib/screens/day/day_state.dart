@@ -15,4 +15,14 @@ class DayState extends Equatable {
 
   @override
   List<Object?> get props => [tasks, status];
+
+  DayState copyWith({
+   List<Task>? tasks,
+   Status? status
+  }) {
+    return DayState(
+      tasks: tasks ?? this.tasks,
+      status: status ?? this.status
+    );
+  }
 }

@@ -27,13 +27,13 @@ class TaskManagerApp extends StatelessWidget  {
           scaffoldBackgroundColor: Colors.white,
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(
-              textStyle: MaterialStateProperty.resolveWith<TextStyle?>((_) => TextStyle(fontSize: 16.0)),
-              padding: MaterialStateProperty.resolveWith<EdgeInsetsGeometry?>((_) => EdgeInsets.all(16.0))
+              textStyle: MaterialStateProperty.resolveWith<TextStyle?>((_) => const TextStyle(fontSize: 16.0)),
+              padding: MaterialStateProperty.resolveWith<EdgeInsetsGeometry?>((_) => const EdgeInsets.all(16.0))
             ),
           )
         ),
         home: BlocProvider(
-          create: (BuildContext context) => CalendarCubit(tasksRepository: tasksRepository),
+          create: (_) => CalendarCubit(tasksRepository: tasksRepository),
           child: const CalendarScreen()
         )
       )

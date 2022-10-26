@@ -4,10 +4,10 @@ import 'package:equatable/equatable.dart';
 class DayTaskFormCubit extends Cubit<DayTaskFormState> {
   DayTaskFormCubit() : super(const DayTaskFormState());
 
-  void setSelectedTime(String? time) {
+  void setSelectedDateTime(DateTime? dateTime) {
     emit( 
       DayTaskFormState(
-        selectedTime: time
+        selectedDateTime: dateTime
       )
     );
   }
@@ -15,11 +15,11 @@ class DayTaskFormCubit extends Cubit<DayTaskFormState> {
 
 class DayTaskFormState extends Equatable {
   const DayTaskFormState({
-    this.selectedTime,
+    this.selectedDateTime,
   });
 
-  final String? selectedTime;
+  final DateTime? selectedDateTime;
 
   @override
-  List<Object?> get props => [selectedTime];
+  List<Object?> get props => [selectedDateTime];
 }

@@ -1,3 +1,4 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/api/models/task.dart';
 
@@ -20,7 +21,7 @@ class DayTaskList extends StatelessWidget  {
     }
     return ListView.builder(
       itemCount: tasks.length,
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       itemBuilder: (BuildContext context, int index) {
         return Dismissible(
           background: Container(
@@ -29,17 +30,11 @@ class DayTaskList extends StatelessWidget  {
           key: ValueKey<String>(tasks[index].id),
           onDismissed: onTaskDismiss != null ? (_) => onTaskDismiss!(tasks[index].id) : null,
           child: ListTile(
-            title: Text(getTimeFromDate(tasks[index].dateTime)),
+            title: Text(formatDate(tasks[index].dateTime, [HH, ':', nn])),
             subtitle: Text(tasks[index].description),
           ),
         );
       },
     );
-  }
-
-  String getTimeFromDate(DateTime date) {
-    final String hours = date.hour.toString().padLeft(2, '0');
-    final String minutes = date.minute.toString().padLeft(2, '0');
-    return hours + ':' + minutes;
   }
 }

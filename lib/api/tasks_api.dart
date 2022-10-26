@@ -51,17 +51,15 @@ class TasksApi {
     return _setValue(kTasksCollectionKey, json.encode(tasks));
   }
 
-  Future<void> deleteTask(String id) async {
+  Future<void> deleteTask(String id) {
     final tasks = [..._tasksStreamController.value];
-    final taskIndex = tasks.indexWhere((t) => t.id == id);
+    final taskIndex = tasks.indexWhere((Task task) => task.id == id);
     if (taskIndex != -1) {
       tasks.removeAt(taskIndex);
       _tasksStreamController.add(tasks);
       return _setValue(kTasksCollectionKey, json.encode(tasks));
+    } else {
+      return Future.error({});
     }
   }
-
-  // bool _isDateEqual(DateTime firstDate, DateTime secondDate) {
-  //   return firstDate.year == secondDate.year && firstDate.month == secondDate.month && firstDate.day == secondDate.day;
-  // }
 }
