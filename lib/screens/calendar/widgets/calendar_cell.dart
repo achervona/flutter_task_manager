@@ -39,26 +39,26 @@ class CalendarCell extends StatelessWidget  {
               ),
               if (taskNumber != 0)
                 Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 18,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      taskNumber.toString(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.purple.shade800,
                       ),
-                      child: Text(
-                        taskNumber.toString(),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple.shade800,
-                        ),
-                      ),
-                    )
-                  ),
+                    ),
+                  )
+                ),
             ],
           )
         )

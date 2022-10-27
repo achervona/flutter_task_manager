@@ -1,5 +1,5 @@
-import 'package:flutter_test_app/api/models/task.dart';
-import 'package:flutter_test_app/api/tasks_api.dart';
+import '../api/models/task.dart';
+import '../api/tasks_api.dart';
 
 class TasksRepository {
   const TasksRepository({
@@ -8,7 +8,7 @@ class TasksRepository {
 
   final TasksApi _tasksApi;
 
-  List<Task> getTasks(DateTime startDate, DateTime? endDate) => _tasksApi.getTasks(startDate, endDate);
+  Future<List<Task>> getTasks(DateTime startDate, DateTime? endDate) => _tasksApi.getTasks(startDate, endDate);
 
   Future<void> addTask(Task task) => _tasksApi.addTask(task);
 

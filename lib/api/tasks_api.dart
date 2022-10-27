@@ -1,65 +1,88 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:rxdart/subjects.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'models/task.dart';
-import "package:collection/collection.dart";
 
 class TasksApi {
-  TasksApi({
-    required SharedPreferences plugin,
-  }) : _plugin = plugin {
-    _init();
-  }
+  final String tableName = 'tasks';
+  Database? _database;
 
-  final SharedPreferences _plugin;
-  final _tasksStreamController = BehaviorSubject<List<Task>>.seeded(const []);
-  final controller = BehaviorSubject<List<Task>>.seeded(const []);
-  static const kTasksCollectionKey = '__tasks_collection_key__';
-
-  String? _getValue(String key) => _plugin.getString(key);
-
-  Future<void> _setValue(String key, String value) => _plugin.setString(key, value);
-
-  void _init() {
-    final tasksJson = _getValue(kTasksCollectionKey);
-    if (tasksJson != null) {
-      final tasks = List<Map<dynamic, dynamic>>.from(
-        json.decode(tasksJson) as List,
-      )
-        .map((jsonMap) => Task.fromJson(Map<String, dynamic>.from(jsonMap)))
-        .toList();
-      _tasksStreamController.add(tasks);
-    } else {
-      _tasksStreamController.add(const []);
+  Future<Database> get database async {
+    if (_database != null) {
+      return _database!;
     }
+    _database = await _initDatabase();
+    return _database!;
   }
 
-  List<Task> getTasks(DateTime startDate, DateTime? endDate) {
-    return [..._tasksStreamController.value]
-      .where((Task task) => 
-        (task.dateTime.isAfter(startDate) || task.dateTime.isAtSameMomentAs(startDate)) 
-        && (endDate != null ? task.dateTime.isBefore(endDate) : task.dateTime.isBefore(startDate.add(const Duration(days: 1)))))
-      .sortedBy((Task task) => task.dateTime)
-      .toList();
+ // final _tasksStreamController = BehaviorSubject<List<Task>>.seeded(const []);
+ // static const kTasksCollectionKey = '__tasks_collection_key__';
+
+  // String? _getValue(String key) => _plugin.getString(key);
+
+  // Future<void> _setValue(String key, String value) => _plugin.setString(key, value);
+
+  // void _init() {
+  //   final tasksJson = _getValue(kTasksCollectionKey);
+  //   if (tasksJson != null) {
+  //     final tasks = List<Map<dynamic, dynamic>>.from(
+  //       json.decode(tasksJson) as List,
+  //     )
+  //       .map((jsonMap) => Task.fromJson(Map<String, dynamic>.from(jsonMap)))
+  //       .toList();
+  //     _tasksStreamController.add(tasks);
+  //   } else {
+  //     _tasksStreamController.add(const []);
+  //   }
+  // }
+
+  Future<Database> _initDatabase() async {
+    return await openDatabase(
+      join(await getDatabasesPath(), 'tasks_database.db'),
+      onCreate: (Database db, int version) {
+        return db.execute(
+          'CREATE TABLE $tableName(id TEXT PRIMARY KEY, dateTime INTEGER, description TEXT)',
+        );
+      },
+      version: 1,
+    );
   }
 
-  Future<void> addTask(Task task) {
-    final tasks = [..._tasksStreamController.value];
-    tasks.add(task);
-    _tasksStreamController.add(tasks);
-    return _setValue(kTasksCollectionKey, json.encode(tasks));
+  Future<List<Task>> getTasks(DateTime startDate, DateTime? endDate) async {
+    final Database db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      tableName, 
+      where: 'dateTime >= ? ${endDate != null ? "AND dateTime < ?" : ""}', 
+      whereArgs: [Task.dateTimeToJson(startDate), if (endDate != null) Task.dateTimeToJson(endDate)], 
+      orderBy: 'dateTime'
+    );
+
+    final List<Task> tasks = List.generate(
+      maps.length, 
+      (index) => Task.fromJson(Map<String, dynamic>.from(maps[index]))
+    );
+
+    return tasks;
   }
 
-  Future<void> deleteTask(String id) {
-    final tasks = [..._tasksStreamController.value];
-    final taskIndex = tasks.indexWhere((Task task) => task.id == id);
-    if (taskIndex != -1) {
-      tasks.removeAt(taskIndex);
-      _tasksStreamController.add(tasks);
-      return _setValue(kTasksCollectionKey, json.encode(tasks));
-    } else {
-      return Future.error({});
-    }
+  Future<int> addTask(Task task) async {
+    final Database db = await database;
+
+    return db.insert(
+      tableName,
+      task.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<int> deleteTask(String id) async {
+    final Database db = await database;
+
+    return db.delete(
+      tableName,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

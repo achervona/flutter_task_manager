@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_test_app/api/models/day.dart';
+import '../../api/models/day.dart';
 
 enum Status { initial, loading, success, error }
 

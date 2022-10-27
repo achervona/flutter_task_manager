@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_app/api/models/day.dart';
-import 'package:flutter_test_app/api/models/task.dart';
-import 'package:flutter_test_app/repositories/tasks_repository.dart';
+import '../../api/models/day.dart';
+import '../../api/models/task.dart';
+import '../../repositories/tasks_repository.dart';
 import 'calendar_state.dart';
 
 class CalendarCubit extends Cubit<CalendarState> {
@@ -17,7 +17,7 @@ class CalendarCubit extends Cubit<CalendarState> {
 
   final TasksRepository _tasksRepository;
 
-  void load() {
+  void init() {
     _generateDays(state.year, state.month);
   }
 
@@ -33,12 +33,13 @@ class CalendarCubit extends Cubit<CalendarState> {
     _generateDays(year, month);
   }
 
-  void _generateDays(int year, int month) {
+  void _generateDays(int year, int month) async {
     emit(state.copyWith(status: Status.loading));
 
     try {
+      // emit range & tasks to state
       final DateTimeRange range = _getDateTimeRange(year, month);
-      final List<Task> tasks = _tasksRepository.getTasks(range.start, range.end);
+      final List<Task> tasks = await _tasksRepository.getTasks(range.start, range.end);
 
       final days = List<Day>.generate(
         range.duration.inDays,

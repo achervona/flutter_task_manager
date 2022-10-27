@@ -1,6 +1,6 @@
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter_test_app/api/models/task.dart';
+import '../../api/models/task.dart';
 
 enum Status { initial, loading, success, error }
 

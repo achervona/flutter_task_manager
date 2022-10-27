@@ -1,15 +1,15 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_app/api/models/task.dart';
+import '../../../api/models/task.dart';
 
 class DayTaskList extends StatelessWidget  {
   final List<Task> tasks;
-  final void Function(String)? onTaskDismiss;
+  final void Function(String)? onTaskDismissed;
 
   const DayTaskList({
     Key? key,
     this.tasks = const [],
-    this.onTaskDismiss,
+    this.onTaskDismissed,
   }) : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class DayTaskList extends StatelessWidget  {
             color: Colors.redAccent.shade400,
           ),
           key: ValueKey<String>(tasks[index].id),
-          onDismissed: onTaskDismiss != null ? (_) => onTaskDismiss!(tasks[index].id) : null,
+          onDismissed: onTaskDismissed != null ? (_) => onTaskDismissed!(tasks[index].id) : null,
           child: ListTile(
             title: Text(formatDate(tasks[index].dateTime, [HH, ':', nn])),
             subtitle: Text(tasks[index].description),

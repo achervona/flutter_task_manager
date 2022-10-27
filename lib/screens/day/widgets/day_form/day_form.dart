@@ -2,16 +2,17 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'day_task_form_cubit.dart';
+import 'day_form_cubit.dart';
+import 'day_form_state.dart';
 
 class DayTaskForm extends StatefulWidget  {
-  final void Function(DateTime dateTime, String description) addTask;
+  final void Function(DateTime dateTime, String description) onSubmit;
   final DateTime date;
 
   const DayTaskForm({
     Key? key,
     required this.date,
-    required this.addTask,
+    required this.onSubmit,
   }) : super(key: key);
 
   @override
@@ -25,17 +26,22 @@ class _DayTaskFormState extends State<DayTaskForm> {
   @override
   void initState() {
     super.initState();
-    context.read<DayTaskFormCubit>().setSelectedDateTime(widget.date);
+    context.read<DayFormCubit>().setSelectedDateTime(widget.date);
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: BlocBuilder<DayTaskFormCubit, DayTaskFormState>(
-          builder: (_, DayTaskFormState state) {
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(color: Colors.purple.shade800)
+          ),
+        ),
+        child: BlocBuilder<DayFormCubit, DayFormState>(
+          builder: (_, DayFormState state) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -54,14 +60,14 @@ class _DayTaskFormState extends State<DayTaskForm> {
                       use24hFormat: true,
                       minuteInterval: 30,
                       onDateTimeChanged: (DateTime newDateTime) {
-                        context.read<DayTaskFormCubit>().setSelectedDateTime(newDateTime);
+                        context.read<DayFormCubit>().setSelectedDateTime(newDateTime);
                       },
                     )
                   ),
                 ),
                 TextFormField(
                   controller: _descriptionController,
-                  validator: (value) => value == null || value.isEmpty ? 'Field is required' : null,
+                  validator: _descriptionValidator,
                   decoration: InputDecoration(
                     errorStyle: TextStyle(color: Colors.redAccent.shade400),
                     errorBorder: UnderlineInputBorder (
@@ -69,12 +75,10 @@ class _DayTaskFormState extends State<DayTaskForm> {
                     )
                   )
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () => _onSubmit(state.selectedDateTime!, _descriptionController.value.text),
-                    child: const Text('Add task'),
-                  )
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () => _onSubmit(state.selectedDateTime!, _descriptionController.value.text),
+                  child: const Text('Add task'),
                 )
               ],
             );
@@ -88,8 +92,8 @@ class _DayTaskFormState extends State<DayTaskForm> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    widget.addTask(dateTime, description);
-    context.read<DayTaskFormCubit>().setSelectedDateTime(widget.date);
+    widget.onSubmit(dateTime, description);
+    context.read<DayFormCubit>().setSelectedDateTime(widget.date);
     _descriptionController.clear();
   }
 
@@ -109,6 +113,16 @@ class _DayTaskFormState extends State<DayTaskForm> {
         ),
       )
     );
+  }
+
+  String? _descriptionValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Field is required';
+    }
+    if (value.length > 512) {
+      return 'Field length must be less than 512 characters';
+    }
+    return null;
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_test_app/screens/calendar/calendar_screen.dart';
 import 'repositories/tasks_repository.dart';
+import 'screens/calendar/calendar_screen.dart';
 import 'screens/calendar/calendar_cubit.dart';
 
 class TaskManagerApp extends StatelessWidget  {
@@ -18,6 +18,7 @@ class TaskManagerApp extends StatelessWidget  {
       value: tasksRepository,
       child: MaterialApp(
         title: 'Task Manager',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: Colors.purple.shade800,
           colorScheme: ColorScheme.light(
