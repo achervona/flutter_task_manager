@@ -8,7 +8,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final TasksApi tasksApi = TasksApi();
-  final TasksRepository tasksRepository = TasksRepository(tasksApi: tasksApi);
+  final TasksRepository tasksRepository = TasksRepository(
+    tasksApi: tasksApi
+  );
   
-  runApp(TaskManagerApp(tasksRepository: tasksRepository));
+  runApp(
+    TaskManagerApp(
+      tasksRepository: tasksRepository
+    )
+  );
 }

@@ -21,23 +21,22 @@ class CalendarCubit extends Cubit<CalendarState> {
     _generateDays(state.year, state.month);
   }
 
-  void nextMonth() {
+  void goToNextMonth() {
     final int year = state.month < 12 ? state.year : state.year + 1;
     final int month = state.month < 12 ? state.month + 1 : 1;
     _generateDays(year, month);
   }
 
-  void prevMonth() {
+  void goToPrevMonth() {
     final int year = state.month > 1 ? state.year : state.year - 1;
     final int month = state.month > 1 ? state.month - 1 : 12;
     _generateDays(year, month);
   }
 
   void _generateDays(int year, int month) async {
-    emit(state.copyWith(status: Status.loading));
+    emit(state.copyWith(status: CalendarStatus.loading));
 
     try {
-      // emit range & tasks to state
       final DateTimeRange range = _getDateTimeRange(year, month);
       final List<Task> tasks = await _tasksRepository.getTasks(range.start, range.end);
 
@@ -47,24 +46,26 @@ class CalendarCubit extends Cubit<CalendarState> {
           final DateTime date = range.start.add(Duration(days: index));
           return Day(
             date: date,
-            taskNumber: tasks.where((task) => _compareDate(task.dateTime, date)).length,
+            tasks: tasks.where((task) => _compareDate(task.dateTime, date)).toList(),
             isToday: _compareDate(date, DateTime.now()),
             isActive: date.month == month,
           );
         } 
       );
-      emit(state.copyWith(
+      emit(
+        state.copyWith(
           year: year,
           month: month,
           days: days,
-          status: Status.success
+          status: CalendarStatus.success
         )
       );
     } catch (error) {
-      emit(state.copyWith(
+      emit(
+        state.copyWith(
           year: year,
           month: month,
-          status: Status.error
+          status: CalendarStatus.error
         )
       );
     }
@@ -77,6 +78,16 @@ class CalendarCubit extends Cubit<CalendarState> {
     return DateTimeRange(
       start: start,
       end: start.add(const Duration(days: 42)),
+    );
+  }
+
+  void updateDayTasks(DateTime date, List<Task> tasks) {
+    emit(
+      state.copyWith(
+        days: state.days.map((Day day) => 
+          _compareDate(day.date, date) ? day.copyWith(tasks: tasks) : day
+        ).toList()
+      )
     );
   }
 

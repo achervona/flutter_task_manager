@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'repositories/tasks_repository.dart';
 import 'screens/calendar/calendar_screen.dart';
 import 'screens/calendar/calendar_cubit.dart';
+import 'theme.dart';
 
 class TaskManagerApp extends StatelessWidget  {
   const TaskManagerApp({
@@ -19,20 +20,7 @@ class TaskManagerApp extends StatelessWidget  {
       child: MaterialApp(
         title: 'Task Manager',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: Colors.purple.shade800,
-          colorScheme: ColorScheme.light(
-            primary: Colors.purple.shade800,
-            secondary: Colors.purple.shade400
-          ),
-          scaffoldBackgroundColor: Colors.white,
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ButtonStyle(
-              textStyle: MaterialStateProperty.resolveWith<TextStyle?>((_) => const TextStyle(fontSize: 16.0)),
-              padding: MaterialStateProperty.resolveWith<EdgeInsetsGeometry?>((_) => const EdgeInsets.all(16.0))
-            ),
-          )
-        ),
+        theme: appThemeData,
         home: BlocProvider(
           create: (_) => CalendarCubit(tasksRepository: tasksRepository),
           child: const CalendarScreen()

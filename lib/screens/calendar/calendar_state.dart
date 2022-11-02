@@ -1,20 +1,20 @@
 import 'package:equatable/equatable.dart';
 import '../../api/models/day.dart';
 
-enum Status { initial, loading, success, error }
+enum CalendarStatus { initial, loading, success, error }
 
 class CalendarState extends Equatable {
   const CalendarState({
     required this.year,
     required this.month,
     this.days = const <Day>[],
-    this.status = Status.initial
+    this.status = CalendarStatus.initial
   });
 
   final int year;
   final int month;
   final List<Day> days;
-  final Status status;
+  final CalendarStatus status;
 
   @override
   List<Object?> get props => [year, month, days, status];
@@ -23,7 +23,7 @@ class CalendarState extends Equatable {
    int? year,
    int? month,
    List<Day>? days,
-   Status? status
+   CalendarStatus? status
   }) {
     return CalendarState(
       year: year ?? this.year,

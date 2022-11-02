@@ -10,20 +10,13 @@ class DayCubit extends Cubit<DayState> {
 
   final TasksRepository _tasksRepository;
 
-  void getTasks(DateTime startDate, [DateTime? endDate]) async {
-    emit(state.copyWith(status: Status.loading));
-
-    try {
-      final List<Task> tasks = await _tasksRepository.getTasks(startDate, endDate);
-      emit(
-        state.copyWith(
-          tasks: tasks,
-          status: Status.success
-        )
-      );
-    } catch (error) {
-      emit(state.copyWith(status: Status.error));
-    }
+  void setTasks(List<Task> tasks) {
+    emit(
+      state.copyWith(
+        tasks: tasks,
+        status: DayStatus.success
+      )
+    );
   }
 
   Future<void> addTask(Task task) async {
@@ -36,11 +29,11 @@ class DayCubit extends Cubit<DayState> {
       emit(
         state.copyWith(
           tasks: tasks,
-          status: Status.success
+          status: DayStatus.success
         )
       );
     } catch (error) {
-      emit(state.copyWith(status: Status.error));
+      emit(state.copyWith(status: DayStatus.error));
     }
   }
 
@@ -53,11 +46,11 @@ class DayCubit extends Cubit<DayState> {
       emit(
         state.copyWith(
           tasks: tasks,
-          status: Status.success
+          status: DayStatus.success
         )
       );
     } catch (error) {
-      emit(state.copyWith(status: Status.error));
+      emit(state.copyWith(status: DayStatus.error));
     }
   }
 }

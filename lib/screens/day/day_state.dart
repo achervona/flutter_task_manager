@@ -1,24 +1,23 @@
-
 import 'package:equatable/equatable.dart';
 import '../../api/models/task.dart';
 
-enum Status { initial, loading, success, error }
+enum DayStatus { initial, success, error }
 
 class DayState extends Equatable {
   const DayState({
     this.tasks = const <Task>[],
-    this.status = Status.initial
+    this.status = DayStatus.initial
   });
 
   final List<Task> tasks;
-  final Status status;
+  final DayStatus status;
 
   @override
   List<Object?> get props => [tasks, status];
 
   DayState copyWith({
    List<Task>? tasks,
-   Status? status
+   DayStatus? status
   }) {
     return DayState(
       tasks: tasks ?? this.tasks,

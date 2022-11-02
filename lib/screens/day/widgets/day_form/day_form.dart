@@ -2,6 +2,7 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../theme.dart';
 import 'day_form_cubit.dart';
 import 'day_form_state.dart';
 
@@ -34,11 +35,15 @@ class _DayTaskFormState extends State<DayTaskForm> {
     return Form(
       key: _formKey,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(color: Colors.purple.shade800)
-          ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 24.0, 
+          horizontal: 16.0
+        ),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: AppConstants.mainBorderRadius
+          )
         ),
         child: BlocBuilder<DayFormCubit, DayFormState>(
           builder: (_, DayFormState state) {
@@ -47,10 +52,20 @@ class _DayTaskFormState extends State<DayTaskForm> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 GestureDetector(
-                  child: Text(
-                    formatDate(state.selectedDateTime!, [HH, ':', nn]),
-                    style: const TextStyle(
-                      fontSize: 20
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14.0, 
+                      horizontal: 16.0
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppConstants.fieldColor,
+                      borderRadius: const BorderRadius.all(AppConstants.fieldBorderRadius),
+                    ),
+                    child: Text(
+                      formatDate(state.selectedDateTime!, [HH, ':', nn]),
+                      style: const TextStyle(
+                        fontSize: AppConstants.bodyFontSize
+                      ),
                     ),
                   ),
                   onTap: () => _showDialog(
@@ -65,20 +80,18 @@ class _DayTaskFormState extends State<DayTaskForm> {
                     )
                   ),
                 ),
+                const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _descriptionController,
                   validator: _descriptionValidator,
-                  decoration: InputDecoration(
-                    errorStyle: TextStyle(color: Colors.redAccent.shade400),
-                    errorBorder: UnderlineInputBorder (
-                      borderSide: BorderSide(color: Colors.redAccent.shade400)
-                    )
+                  decoration: const InputDecoration(
+                    hintText: 'New task'
                   )
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 20.0),
                 ElevatedButton(
                   onPressed: () => _onSubmit(state.selectedDateTime!, _descriptionController.value.text),
-                  child: const Text('Add task'),
+                  child: const Text('Save')
                 )
               ],
             );
@@ -101,12 +114,17 @@ class _DayTaskFormState extends State<DayTaskForm> {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => Container(
-        height: 216,
+        height: 236,
         padding: const EdgeInsets.only(top: 6.0),
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        color: CupertinoColors.systemBackground.resolveFrom(context),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: AppConstants.mainBorderRadius
+          )
+        ),
         child: SafeArea(
           top: false,
           child: child,
@@ -119,8 +137,8 @@ class _DayTaskFormState extends State<DayTaskForm> {
     if (value == null || value.isEmpty) {
       return 'Field is required';
     }
-    if (value.length > 512) {
-      return 'Field length must be less than 512 characters';
+    if (value.length > 256) {
+      return 'Field length must be less than 256 characters';
     }
     return null;
   }

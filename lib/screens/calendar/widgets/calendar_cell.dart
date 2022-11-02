@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../theme.dart';
+
 class CalendarCell extends StatelessWidget  {
   final String text;
   final Color? color;
@@ -21,47 +23,46 @@ class CalendarCell extends StatelessWidget  {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-          padding: const EdgeInsets.all(4.0),
-          decoration: BoxDecoration(
-            color: color ?? Colors.purple.shade800,
-            borderRadius: const BorderRadius.all(Radius.circular(4.0))
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: Text(
-                  text,
-                  style: TextStyle(
-                    color: textColor ?? Colors.white,
-                    fontSize: 16,
-                  ),
+        padding: const EdgeInsets.all(4.0),
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+        child: Stack(
+          children: [
+            Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: AppConstants.bodyFontSize,
                 ),
               ),
-              if (taskNumber != 0)
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
+            ),
+            if (taskNumber != 0)
+              Positioned(
+                right: 0.0,
+                bottom: 0.0,
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 18.0,
+                  height: 18.0,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    taskNumber.toString(),
+                    style: TextStyle(
+                      fontSize: 10.0,
+                      color: AppConstants.primaryColor,
                     ),
-                    child: Text(
-                      taskNumber.toString(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.purple.shade800,
-                      ),
-                    ),
-                  )
-                ),
-            ],
-          )
+                  ),
+                )
+              ),
+          ],
         )
-      );
+      )
+    );
   }
 }

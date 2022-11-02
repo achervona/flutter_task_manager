@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../api/models/task.dart';
 import '../../api/models/day.dart';
 import '../../repositories/tasks_repository.dart';
 import '../../screens/day/day_cubit.dart';
 import '../../screens/day/day_screen.dart';
+import '../../theme.dart';
 import 'calendar_cubit.dart';
 import 'calendar_state.dart';
 import 'widgets/calendar_cell.dart';
@@ -31,7 +33,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<CalendarCubit, CalendarState>(
       listener: (BuildContext context, CalendarState state) {
-        if (state.status == Status.error) {
+        if (state.status == CalendarStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Error occurred')
@@ -41,15 +43,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
       },
       builder: (_, CalendarState state) {
         return Scaffold(
+          backgroundColor: AppConstants.primaryColor,
           appBar: AppBar(
             centerTitle: true,
+            elevation: 0,
             title: Text(months[state.month - 1] + ' ' + state.year.toString()),
             leading: IconButton(
               icon: const Icon(
                 Icons.keyboard_arrow_left,
                 size: 24
               ),
-              onPressed: () => context.read<CalendarCubit>().prevMonth(),
+              splashRadius: 24,
+              onPressed: () => context.read<CalendarCubit>().goToPrevMonth(),
             ),
             actions: [
               IconButton(
@@ -57,34 +62,33 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Icons.keyboard_arrow_right,
                   size: 24
                 ),
-                onPressed: () => context.read<CalendarCubit>().nextMonth(),
+                splashRadius: 24,
+                onPressed: () => context.read<CalendarCubit>().goToNextMonth(),
               )
             ],
           ),
-          body: (state.status == Status.loading)
+          body: (state.status == CalendarStatus.loading)
             ? const Center(child: CircularProgressIndicator())
-              : (state.status == Status.success)
+              : (state.status == CalendarStatus.success)
               ? GridView.count(
-                primary: false,
+                shrinkWrap: true,
                 padding: const EdgeInsets.all(10.0),
-                crossAxisSpacing: 4.0,
-                mainAxisSpacing: 4.0,
-                crossAxisCount: daysOfWeek.length,
+                crossAxisCount: 7,
                 children: [
                   ...daysOfWeek.map((String day) =>
-                      CalendarCell(
-                        text: day,
-                        textColor: Colors.purple.shade800,
-                        color: Colors.white,
-                      )
+                    CalendarCell(
+                      text: day,
+                      textColor: AppConstants.bodyTextColor
+                    )
                   ).toList(),
                   ...state.days.map((Day day) => 
-                      CalendarCell(
-                        text: day.date.day.toString(),
-                        color: day.isToday ? Colors.redAccent.shade400 : !day.isActive ? Colors.purple.shade100 : null,
-                        taskNumber: day.taskNumber,
-                        onTap: () => _navigateToDayScreen(day.date),
-                      )
+                    CalendarCell(
+                      text: day.date.day.toString(),
+                      color: day.isToday ? AppConstants.secondaryColor : null,
+                      textColor: day.isActive || day.isToday ? AppConstants.bodyTextColor : AppConstants.bodyTextColor.withOpacity(0.5),
+                      taskNumber: day.tasks.length,
+                      onTap: () => _navigateToDayScreen(day)
+                    )
                   ).toList(),
                 ]
               )
@@ -94,17 +98,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  void _navigateToDayScreen(DateTime date) {
+  void _navigateToDayScreen(Day day) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (BuildContext context) {
           return BlocProvider(
-            create: (BuildContext context) => DayCubit(tasksRepository: context.read<TasksRepository>()),
-            child: DayScreen(date: date)
+            create: (BuildContext context) => DayCubit(
+              tasksRepository: context.read<TasksRepository>()
+            ),
+            child: DayScreen(
+              date: day.date,
+              tasks: day.tasks,
+              onTaskListUpdate: updateDayTasks
+            )
           );
         }
       )
     );
+  }
+
+  void updateDayTasks(DateTime date, List<Task> tasks) {
+    context.read<CalendarCubit>().updateDayTasks(date, tasks);
   }
 }
