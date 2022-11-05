@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../api/models/task.dart';
+import '../../models/task.dart';
 
 enum DayStatus { initial, success, error }
 

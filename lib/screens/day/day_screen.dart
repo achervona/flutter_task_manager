@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../api/models/task.dart';
+import '../../models/task.dart';
 import '../../theme.dart';
 import 'day_cubit.dart';
 import 'day_state.dart';
@@ -13,13 +13,13 @@ class DayScreen extends StatefulWidget {
   const DayScreen({
     Key? key,
     required this.date,
-    this.tasks = const <Task>[],
-    this.onTaskListUpdate
+    required this.onTaskListUpdate,
+    this.tasks = const <Task>[]
   }) : super(key: key);
 
   final DateTime date;
   final List<Task> tasks;
-  final void Function(DateTime date, List<Task> tasks)? onTaskListUpdate;
+  final void Function(DateTime date, List<Task> tasks) onTaskListUpdate;
 
   @override
   State<DayScreen> createState() => _DayScreenState();
@@ -35,11 +35,11 @@ class _DayScreenState extends State<DayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppConstants.secondaryColor,
+      backgroundColor: AppThemeConstants.secondaryColor,
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppConstants.secondaryColor,
+        backgroundColor: AppThemeConstants.secondaryColor,
         title: Text(formatDate(widget.date, [dd, '.', mm, '.', yyyy])),
       ),
       body: Column(
@@ -62,7 +62,7 @@ class _DayScreenState extends State<DayScreen> {
                 }
                 return DayTaskList(
                   tasks: state.tasks,
-                  onTaskDismissed: deleteTask
+                  onTaskDismissed: _deleteTask
                 );
               }
             ),
@@ -71,7 +71,7 @@ class _DayScreenState extends State<DayScreen> {
             create: (_) => DayFormCubit(),
             child: SafeArea(
               child: DayTaskForm(
-                onSubmit: addTask,
+                onSubmit: _addTask,
                 date: widget.date
               ),
             )
@@ -81,23 +81,19 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 
-  void addTask(DateTime dateTime, String description) async {
+  void _addTask(DateTime dateTime, String description) async {
     final Task task = Task(
       dateTime: dateTime,
       description: description
     );
     final DayCubit cubit = context.read<DayCubit>();
     await cubit.addTask(task);
-    if (widget.onTaskListUpdate != null) {
-      widget.onTaskListUpdate!(widget.date, cubit.state.tasks);
-    }
+    widget.onTaskListUpdate(widget.date, cubit.state.tasks);
   }
 
-  void deleteTask(String id) async {
+  void _deleteTask(String id) async {
     final DayCubit cubit = context.read<DayCubit>();
     await cubit.deleteTask(id);
-    if (widget.onTaskListUpdate != null) {
-      widget.onTaskListUpdate!(widget.date, cubit.state.tasks);
-    }
+    widget.onTaskListUpdate(widget.date, cubit.state.tasks);
   }
 }

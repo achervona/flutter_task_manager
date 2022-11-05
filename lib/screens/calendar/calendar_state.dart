@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../api/models/day.dart';
+import '../../models/day.dart';
 
 enum CalendarStatus { initial, loading, success, error }
 

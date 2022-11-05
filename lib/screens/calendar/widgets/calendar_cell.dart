@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-
 import '../../../theme.dart';
 
 class CalendarCell extends StatelessWidget  {
-  final String text;
-  final Color? color;
-  final Color? textColor;
-  final int taskNumber;
-  final void Function()? onTap;
-
   const CalendarCell({
     Key? key,
     required this.text,
@@ -17,6 +10,12 @@ class CalendarCell extends StatelessWidget  {
     this.taskNumber = 0,
     this.onTap
   }) : super(key: key);
+
+  final String text;
+  final Color? color;
+  final Color? textColor;
+  final int taskNumber;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +34,7 @@ class CalendarCell extends StatelessWidget  {
                 text,
                 style: TextStyle(
                   color: textColor,
-                  fontSize: AppConstants.bodyFontSize,
+                  fontSize: AppThemeConstants.bodyFontSize,
                 ),
               ),
             ),
@@ -55,7 +54,7 @@ class CalendarCell extends StatelessWidget  {
                     taskNumber.toString(),
                     style: TextStyle(
                       fontSize: 10.0,
-                      color: AppConstants.primaryColor,
+                      color: AppThemeConstants.primaryColor,
                     ),
                   ),
                 )

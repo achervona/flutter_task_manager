@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class AppConstants {
+class AppThemeConstants {
   static final Color primaryColor = Colors.blue.shade900;
   static const Color secondaryColor = Colors.blueAccent;
   static const Color bodyTextColor = Colors.white;
@@ -13,10 +13,10 @@ class AppConstants {
 }
 
 final ThemeData appThemeData = ThemeData(
-  primaryColor: AppConstants.primaryColor,
+  primaryColor: AppThemeConstants.primaryColor,
   colorScheme: ColorScheme.light(
-    primary: AppConstants.primaryColor,
-    secondary: AppConstants.secondaryColor
+    primary: AppThemeConstants.primaryColor,
+    secondary: AppThemeConstants.secondaryColor
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
@@ -31,42 +31,42 @@ final ThemeData appThemeData = ThemeData(
       ),
       shape: MaterialStateProperty.resolveWith<OutlinedBorder?>((_) => 
         const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(AppConstants.mainBorderRadius)
+          borderRadius: BorderRadius.all(AppThemeConstants.mainBorderRadius)
         )
       )
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: AppConstants.fieldColor,
+    fillColor: AppThemeConstants.fieldColor,
     contentPadding: const EdgeInsets.symmetric(
       vertical: 8.0, 
       horizontal: 16.0
     ),
     border: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(AppConstants.fieldBorderRadius),
+      borderRadius: BorderRadius.all(AppThemeConstants.fieldBorderRadius),
       borderSide: BorderSide.none,
     ),
     errorBorder: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(AppConstants.fieldBorderRadius),
+      borderRadius: BorderRadius.all(AppThemeConstants.fieldBorderRadius),
       borderSide: BorderSide(
-        color: AppConstants.warningColor
+        color: AppThemeConstants.warningColor
       ),
     ),
     focusedErrorBorder: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(AppConstants.fieldBorderRadius),
+      borderRadius: BorderRadius.all(AppThemeConstants.fieldBorderRadius),
       borderSide: BorderSide(
-        color: AppConstants.warningColor
+        color: AppThemeConstants.warningColor
       ),
     ),
     errorStyle: const TextStyle(
-      color: AppConstants.warningColor
+      color: AppThemeConstants.warningColor
     ),
     hintStyle: const TextStyle(
-      color: AppConstants.hintColor
+      color: AppThemeConstants.hintColor
     )
   ),
   progressIndicatorTheme: const ProgressIndicatorThemeData(
-    color: AppConstants.secondaryColor
+    color: AppThemeConstants.secondaryColor
   )
 );

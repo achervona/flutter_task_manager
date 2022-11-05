@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import '../../api/models/task.dart';
+import '../../models/task.dart';
 import '../../repositories/tasks_repository.dart';
 import 'day_state.dart';
 

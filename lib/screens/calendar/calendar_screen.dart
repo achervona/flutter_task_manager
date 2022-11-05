@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../api/models/task.dart';
-import '../../api/models/day.dart';
+import '../../models/task.dart';
+import '../../models/day.dart';
 import '../../repositories/tasks_repository.dart';
 import '../../screens/day/day_cubit.dart';
 import '../../screens/day/day_screen.dart';
 import '../../theme.dart';
+import '../../widgets/app_toggle_buttons.dart';
 import 'calendar_cubit.dart';
 import 'calendar_state.dart';
 import 'widgets/calendar_cell.dart';
@@ -43,7 +44,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       },
       builder: (_, CalendarState state) {
         return Scaffold(
-          backgroundColor: AppConstants.primaryColor,
+          backgroundColor: AppThemeConstants.primaryColor,
           appBar: AppBar(
             centerTitle: true,
             elevation: 0,
@@ -53,7 +54,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 Icons.keyboard_arrow_left,
                 size: 24
               ),
-              splashRadius: 24,
               onPressed: () => context.read<CalendarCubit>().goToPrevMonth(),
             ),
             actions: [
@@ -62,7 +62,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Icons.keyboard_arrow_right,
                   size: 24
                 ),
-                splashRadius: 24,
                 onPressed: () => context.read<CalendarCubit>().goToNextMonth(),
               )
             ],
@@ -72,27 +71,40 @@ class _CalendarScreenState extends State<CalendarScreen> {
               : (state.status == CalendarStatus.success)
               ? GridView.count(
                 shrinkWrap: true,
-                padding: const EdgeInsets.all(10.0),
                 crossAxisCount: 7,
+                padding: const EdgeInsets.all(10.0),
                 children: [
-                  ...daysOfWeek.map((String day) =>
+                  ...daysOfWeek.map((String dayName) =>
                     CalendarCell(
-                      text: day,
-                      textColor: AppConstants.bodyTextColor
+                      text: dayName,
+                      textColor: AppThemeConstants.bodyTextColor
                     )
                   ).toList(),
                   ...state.days.map((Day day) => 
                     CalendarCell(
                       text: day.date.day.toString(),
-                      color: day.isToday ? AppConstants.secondaryColor : null,
-                      textColor: day.isActive || day.isToday ? AppConstants.bodyTextColor : AppConstants.bodyTextColor.withOpacity(0.5),
+                      color: day.isToday ? AppThemeConstants.secondaryColor : null,
+                      textColor: day.isActive || day.isToday ? AppThemeConstants.bodyTextColor : AppThemeConstants.bodyTextColor.withOpacity(0.5),
                       taskNumber: day.tasks.length,
                       onTap: () => _navigateToDayScreen(day)
                     )
                   ).toList(),
                 ]
               )
-              : const SizedBox.shrink()
+              : const SizedBox.shrink(),
+          bottomSheet: const IntrinsicHeight(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: 16.0, 
+                  horizontal: 10.0
+                ),
+                child: AppToggleButtons(
+                  options: <String>['Користувач', 'Адміністратор', 'Власник']
+                ),
+              ),
+            ),
+          ),
         );
       }
     );
@@ -110,7 +122,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             child: DayScreen(
               date: day.date,
               tasks: day.tasks,
-              onTaskListUpdate: updateDayTasks
+              onTaskListUpdate: _updateDayTasks
             )
           );
         }
@@ -118,7 +130,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  void updateDayTasks(DateTime date, List<Task> tasks) {
+  void _updateDayTasks(DateTime date, List<Task> tasks) {
     context.read<CalendarCubit>().updateDayTasks(date, tasks);
   }
 }

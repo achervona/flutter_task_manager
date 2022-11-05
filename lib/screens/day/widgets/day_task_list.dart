@@ -1,17 +1,17 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-import '../../../api/models/task.dart';
+import '../../../models/task.dart';
 import '../../../theme.dart';
 
 class DayTaskList extends StatelessWidget  {
-  final List<Task> tasks;
-  final void Function(String)? onTaskDismissed;
-
   const DayTaskList({
     Key? key,
-    this.tasks = const <Task>[],
-    this.onTaskDismissed,
+    required this.onTaskDismissed,
+    this.tasks = const <Task>[]
   }) : super(key: key);
+
+  final List<Task> tasks;
+  final void Function(String) onTaskDismissed;
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +20,8 @@ class DayTaskList extends StatelessWidget  {
         child: Text(
           'There are no tasks yet',
           style: TextStyle(
-            color: AppConstants.bodyTextColor,
-            fontSize: AppConstants.bodyFontSize,
+            color: AppThemeConstants.bodyTextColor,
+            fontSize: AppThemeConstants.bodyFontSize,
           )
         )
       );
@@ -29,14 +29,16 @@ class DayTaskList extends StatelessWidget  {
     return ListView.builder(
       itemCount: tasks.length,
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(
+        bottom: 16.0
+      ),
       itemBuilder: (BuildContext context, int index) {
         return Dismissible(
           background: Container(
-            color: AppConstants.warningColor,
+            color: AppThemeConstants.warningColor,
           ),
           key: ValueKey<String>(tasks[index].id),
-          onDismissed: onTaskDismissed != null ? (_) => onTaskDismissed!(tasks[index].id) : null,
+          onDismissed: (_) => onTaskDismissed(tasks[index].id),
           child: Card(
             color: Colors.transparent,
             elevation: 0,
@@ -52,15 +54,15 @@ class DayTaskList extends StatelessWidget  {
                   Text(
                     formatDate(tasks[index].dateTime, [HH, ':', nn]),
                     style: const TextStyle(
-                      color: AppConstants.bodyTextColor,
+                      color: AppThemeConstants.bodyTextColor,
                     ),
                   ),
                   const SizedBox(height: 4.0),
                   Text(
                     tasks[index].description,
                     style: const TextStyle(
-                      color: AppConstants.bodyTextColor,
-                      fontSize: AppConstants.bodyFontSize,
+                      color: AppThemeConstants.bodyTextColor,
+                      fontSize: AppThemeConstants.bodyFontSize,
                       fontWeight: FontWeight.bold
                     ),
                   ),

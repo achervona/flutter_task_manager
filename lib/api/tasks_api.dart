@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'models/task.dart';
+import '../models/task.dart';
 
 class TasksApi {
   final String _tableName = 'tasks';
@@ -27,17 +27,17 @@ class TasksApi {
     );
   }
 
-  Future<List<Task>> getTasks(DateTime startDate, DateTime? endDate) async {
+  Future<List<Task>> getTasks(DateTime startDate, DateTime endDate) async {
     final Database db = await database;
 
     final List<Map<String, dynamic>> maps = await db.query(
       _tableName, 
-      where: 'dateTime >= ? ${endDate != null ? "AND dateTime < ?" : ""}', 
-      whereArgs: [Task.dateTimeToJson(startDate), if (endDate != null) Task.dateTimeToJson(endDate)], 
+      where: 'dateTime >= ? AND dateTime < ?', 
+      whereArgs: [Task.dateTimeToJson(startDate), Task.dateTimeToJson(endDate)], 
       orderBy: 'dateTime'
     );
 
-    final List<Task> tasks = List.generate(
+    final List<Task> tasks = List<Task>.generate(
       maps.length, 
       (index) => Task.fromJson(Map<String, dynamic>.from(maps[index]))
     );

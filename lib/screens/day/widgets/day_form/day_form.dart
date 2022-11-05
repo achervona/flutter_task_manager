@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,14 +9,14 @@ import 'day_form_cubit.dart';
 import 'day_form_state.dart';
 
 class DayTaskForm extends StatefulWidget  {
-  final void Function(DateTime dateTime, String description) onSubmit;
-  final DateTime date;
-
   const DayTaskForm({
     Key? key,
     required this.date,
     required this.onSubmit,
   }) : super(key: key);
+
+  final void Function(DateTime dateTime, String description) onSubmit;
+  final DateTime date;
 
   @override
   State<DayTaskForm> createState() => _DayTaskFormState();
@@ -42,29 +44,29 @@ class _DayTaskFormState extends State<DayTaskForm> {
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(
-            top: AppConstants.mainBorderRadius
+            top: AppThemeConstants.mainBorderRadius
           )
         ),
-        child: BlocBuilder<DayFormCubit, DayFormState>(
-          builder: (_, DayFormState state) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                GestureDetector(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BlocBuilder<DayFormCubit, DayFormState>(
+              builder: (_, DayFormState state) {
+                return GestureDetector(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      vertical: 14.0, 
+                      vertical: 14.0,
                       horizontal: 16.0
                     ),
                     decoration: BoxDecoration(
-                      color: AppConstants.fieldColor,
-                      borderRadius: const BorderRadius.all(AppConstants.fieldBorderRadius),
+                      color: AppThemeConstants.fieldColor,
+                      borderRadius: const BorderRadius.all(AppThemeConstants.fieldBorderRadius),
                     ),
                     child: Text(
                       formatDate(state.selectedDateTime!, [HH, ':', nn]),
                       style: const TextStyle(
-                        fontSize: AppConstants.bodyFontSize
+                        fontSize: AppThemeConstants.bodyFontSize
                       ),
                     ),
                   ),
@@ -79,23 +81,26 @@ class _DayTaskFormState extends State<DayTaskForm> {
                       },
                     )
                   ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _descriptionController,
-                  validator: _descriptionValidator,
-                  decoration: const InputDecoration(
-                    hintText: 'New task'
-                  )
-                ),
-                const SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () => _onSubmit(state.selectedDateTime!, _descriptionController.value.text),
-                  child: const Text('Save')
-                )
-              ],
-            );
-          }
+                );
+              }
+            ),
+            const SizedBox(height: 16.0),
+            TextFormField(
+              controller: _descriptionController,
+              validator: _descriptionValidator,
+              decoration: const InputDecoration(
+                hintText: 'New task'
+              )
+            ),
+            const SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () => _onSubmit(
+                context.read<DayFormCubit>().state.selectedDateTime!,
+                _descriptionController.value.text
+              ),
+              child: const Text('Save')
+            )
+          ]
         )
       ),
     );
@@ -115,14 +120,16 @@ class _DayTaskFormState extends State<DayTaskForm> {
       context: context,
       builder: (BuildContext context) => Container(
         height: 236,
-        padding: const EdgeInsets.only(top: 6.0),
+        padding: const EdgeInsets.only(
+          top: 6.0
+        ),
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(
-            top: AppConstants.mainBorderRadius
+            top: AppThemeConstants.mainBorderRadius
           )
         ),
         child: SafeArea(
