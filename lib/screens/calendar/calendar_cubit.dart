@@ -18,27 +18,38 @@ class CalendarCubit extends Cubit<CalendarState> {
   final TasksRepository _tasksRepository;
 
   void init() {
-    _generateDays(state.year, state.month);
+    _generateDays();
   }
 
   void goToNextMonth() {
-    state.month < 12
-      ? _generateDays(state.year, state.month + 1) 
-      : _generateDays(state.year + 1, 1);
+    emit(state.month < 12
+      ? state.copyWith(month: state.month + 1)
+      : state.copyWith(
+          year: state.year + 1,
+          month: 1,
+        )
+    );
+    _generateDays();
   }
 
   void goToPrevMonth() {
-    state.month > 1
-      ? _generateDays(state.year, state.month - 1)
-      : _generateDays(state.year - 1, 12);
+    emit(state.month > 1
+      ? state.copyWith(month: state.month - 1)
+      : state.copyWith(
+          year: state.year - 1,
+          month: 12,
+        )
+    ); 
+    _generateDays();
   }
 
-  void _generateDays(int year, int month) async {
+  void _generateDays() async {
     emit(state.copyWith(status: CalendarStatus.loading));
 
     try {
-      final DateTimeRange dateRange = _getDateRange(year, month);
+      final DateTimeRange dateRange = _getDateRange(state.year, state.month);
       final List<Task> tasks = await _tasksRepository.getTasks(dateRange.start, dateRange.end);
+      final DateTime nowDate = DateTime.now();
 
       final days = List<Day>.generate(
         dateRange.duration.inDays,
@@ -47,27 +58,17 @@ class CalendarCubit extends Cubit<CalendarState> {
           return Day(
             date: date,
             tasks: tasks.where((task) => _compareDates(task.dateTime, date)).toList(),
-            isToday: _compareDates(date, DateTime.now()),
-            isActive: date.month == month,
+            isToday: _compareDates(date, nowDate),
+            isActive: date.month == state.month,
           );
         } 
       );
-      emit(
-        state.copyWith(
-          year: year,
-          month: month,
-          days: days,
-          status: CalendarStatus.success
-        )
-      );
+      emit(state.copyWith(
+        days: days,
+        status: CalendarStatus.success
+      ));
     } catch (error) {
-      emit(
-        state.copyWith(
-          year: year,
-          month: month,
-          status: CalendarStatus.error
-        )
-      );
+      emit(state.copyWith(status: CalendarStatus.error));
     }
   }
 
@@ -84,16 +85,16 @@ class CalendarCubit extends Cubit<CalendarState> {
   }
 
   void updateDayTasks(DateTime date, List<Task> tasks) {
-    emit(
-      state.copyWith(
-        days: state.days.map((Day day) => 
-          _compareDates(day.date, date) ? day.copyWith(tasks: tasks) : day
-        ).toList()
-      )
-    );
+    emit(state.copyWith(
+      days: state.days.map((Day day) => 
+        _compareDates(day.date, date) ? day.copyWith(tasks: tasks) : day
+      ).toList()
+    ));
   }
 
   bool _compareDates(DateTime firstDate, DateTime secondDate) {
-    return firstDate.year == secondDate.year && firstDate.month == secondDate.month && firstDate.day == secondDate.day;
+    return firstDate.year == secondDate.year
+      && firstDate.month == secondDate.month
+      && firstDate.day == secondDate.day;
   }
 }

@@ -11,12 +11,10 @@ class DayCubit extends Cubit<DayState> {
   final TasksRepository _tasksRepository;
 
   void setTasks(List<Task> tasks) {
-    emit(
-      state.copyWith(
-        tasks: tasks,
-        status: DayStatus.success
-      )
-    );
+    emit(state.copyWith(
+      tasks: tasks,
+      status: DayStatus.success
+    ));
   }
 
   Future<void> addTask(Task task) async {
@@ -26,12 +24,10 @@ class DayCubit extends Cubit<DayState> {
       tasks.add(task);
       tasks.sort((a, b) => a.dateTime.compareTo(b.dateTime));
       
-      emit(
-        state.copyWith(
-          tasks: tasks,
-          status: DayStatus.success
-        )
-      );
+      emit(state.copyWith(
+        tasks: tasks,
+        status: DayStatus.success
+      ));
     } catch (error) {
       emit(state.copyWith(status: DayStatus.error));
     }
@@ -43,12 +39,10 @@ class DayCubit extends Cubit<DayState> {
       final List<Task> tasks = [...state.tasks];
       tasks.removeWhere((task) => task.id == id);
 
-      emit(
-        state.copyWith(
-          tasks: tasks,
-          status: DayStatus.success
-        )
-      );
+      emit(state.copyWith(
+        tasks: tasks,
+        status: DayStatus.success
+      ));
     } catch (error) {
       emit(state.copyWith(status: DayStatus.error));
     }

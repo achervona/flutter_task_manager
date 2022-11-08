@@ -32,81 +32,93 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CalendarCubit, CalendarState>(
-      listener: (BuildContext context, CalendarState state) {
-        if (state.status == CalendarStatus.error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Error occurred')
-            )
-          );
+    return Scaffold(
+      backgroundColor: AppThemeConstants.primaryColor,
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        title: BlocBuilder<CalendarCubit, CalendarState> (
+          buildWhen: (CalendarState prevState, CalendarState currentState) => 
+            currentState.year != prevState.year || currentState.month != prevState.month,
+          builder: (_, CalendarState state) {
+            return Text(months[state.month - 1] + ' ' + state.year.toString());
+          }
+        ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.keyboard_arrow_left,
+            size: 24
+          ),
+          onPressed: () => context.read<CalendarCubit>().goToPrevMonth(),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.keyboard_arrow_right,
+              size: 24
+            ),
+            onPressed: () => context.read<CalendarCubit>().goToNextMonth(),
+          )
+        ],
+      ),
+      body: BlocConsumer<CalendarCubit, CalendarState>(
+        listener: (BuildContext context, CalendarState state) {
+          if (state.status == CalendarStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Error occurred')
+              )
+            );
+          }
+        },
+        buildWhen: (CalendarState prevState, CalendarState currentState) => 
+          currentState.status != prevState.status || currentState.days != prevState.days,
+        builder: (_, CalendarState state) {
+          if (state.status == CalendarStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.status == CalendarStatus.success) {
+            return GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 7,
+              padding: const EdgeInsets.all(10.0),
+              children: [
+                ...daysOfWeek.map((String dayName) =>
+                  CalendarCell(
+                    text: dayName,
+                    textColor: AppThemeConstants.bodyTextColor
+                  )
+                ).toList(),
+                ...state.days.map((Day day) => 
+                  CalendarCell(
+                    text: day.date.day.toString(),
+                    color: day.isToday ? AppThemeConstants.secondaryColor : null,
+                    textColor: day.isActive || day.isToday
+                      ? AppThemeConstants.bodyTextColor
+                      : AppThemeConstants.bodyTextColor.withOpacity(0.5),
+                    taskNumber: day.tasks.length,
+                    onTap: () => _navigateToDayScreen(day)
+                  )
+                ).toList(),
+              ]
+            );
+          }
+          return const SizedBox.shrink();
         }
-      },
-      builder: (_, CalendarState state) {
-        return Scaffold(
-          backgroundColor: AppThemeConstants.primaryColor,
-          appBar: AppBar(
-            centerTitle: true,
-            elevation: 0,
-            title: Text(months[state.month - 1] + ' ' + state.year.toString()),
-            leading: IconButton(
-              icon: const Icon(
-                Icons.keyboard_arrow_left,
-                size: 24
-              ),
-              onPressed: () => context.read<CalendarCubit>().goToPrevMonth(),
+      ),
+      bottomSheet: const IntrinsicHeight(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 16.0, 
+              horizontal: 10.0
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(
-                  Icons.keyboard_arrow_right,
-                  size: 24
-                ),
-                onPressed: () => context.read<CalendarCubit>().goToNextMonth(),
-              )
-            ],
-          ),
-          body: (state.status == CalendarStatus.loading)
-            ? const Center(child: CircularProgressIndicator())
-              : (state.status == CalendarStatus.success)
-              ? GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 7,
-                padding: const EdgeInsets.all(10.0),
-                children: [
-                  ...daysOfWeek.map((String dayName) =>
-                    CalendarCell(
-                      text: dayName,
-                      textColor: AppThemeConstants.bodyTextColor
-                    )
-                  ).toList(),
-                  ...state.days.map((Day day) => 
-                    CalendarCell(
-                      text: day.date.day.toString(),
-                      color: day.isToday ? AppThemeConstants.secondaryColor : null,
-                      textColor: day.isActive || day.isToday ? AppThemeConstants.bodyTextColor : AppThemeConstants.bodyTextColor.withOpacity(0.5),
-                      taskNumber: day.tasks.length,
-                      onTap: () => _navigateToDayScreen(day)
-                    )
-                  ).toList(),
-                ]
-              )
-              : const SizedBox.shrink(),
-          bottomSheet: const IntrinsicHeight(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 16.0, 
-                  horizontal: 10.0
-                ),
-                child: AppToggleButtons(
-                  options: <String>['Користувач', 'Адміністратор', 'Власник']
-                ),
-              ),
+            child: AppToggleButtons(
+              options: <String>['Користувач', 'Адміністратор', 'Власник']
             ),
           ),
-        );
-      }
+        ),
+      ),
     );
   }
 

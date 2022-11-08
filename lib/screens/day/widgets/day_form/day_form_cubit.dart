@@ -5,10 +5,8 @@ class DayFormCubit extends Cubit<DayFormState> {
   DayFormCubit() : super(const DayFormState());
 
   void setSelectedDateTime(DateTime? dateTime) {
-    emit( 
-      DayFormState(
-        selectedDateTime: dateTime
-      )
-    );
+    emit(DayFormState(
+      selectedDateTime: dateTime
+    ));
   }
 }

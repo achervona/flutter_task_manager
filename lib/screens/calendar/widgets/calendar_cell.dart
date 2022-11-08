@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme.dart';
 
-class CalendarCell extends StatelessWidget  {
+class CalendarCell extends StatelessWidget {
   const CalendarCell({
     Key? key,
     required this.text,
@@ -58,7 +58,7 @@ class CalendarCell extends StatelessWidget  {
                     ),
                   ),
                 )
-              ),
+              )
           ],
         )
       )

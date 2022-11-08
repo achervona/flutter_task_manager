@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -120,9 +118,7 @@ class _DayTaskFormState extends State<DayTaskForm> {
       context: context,
       builder: (BuildContext context) => Container(
         height: 236,
-        padding: const EdgeInsets.only(
-          top: 6.0
-        ),
+        padding: const EdgeInsets.only(top: 6.0),
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
