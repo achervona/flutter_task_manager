@@ -22,9 +22,9 @@ class AppToggleButtonsState extends State<AppToggleButtons> {
   @override
   void initState() {
     super.initState();
-    final int selectedIndex = widget.selectedIndex < widget.options.length 
-    ? widget.selectedIndex 
-    : widget.options.length - 1;
+    final int selectedIndex = widget.selectedIndex >= 0 
+      && widget.selectedIndex < widget.options.length 
+      ? widget.selectedIndex : 0;
     
     _selectionState = List<bool>.generate(
       widget.options.length,
